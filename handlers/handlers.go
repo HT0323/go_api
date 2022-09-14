@@ -80,5 +80,12 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
+	article := models.Article1
+	jsonData, err := json.Marshal(article)
+	if err != nil {
+		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
+		return
+	}
+	w.Write(jsonData)
 	io.WriteString(w, "Article Comment...\n")
 }
