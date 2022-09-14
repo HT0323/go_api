@@ -2,13 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 
 	"github.com/HT0323/go_api/models"
-	"github.com/gorilla/mux"
 )
 
 func HelloHandler(w http.ResponseWriter, req *http.Request) {
@@ -55,13 +52,20 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
-	articleId, err := strconv.Atoi(mux.Vars(req)["id"])
+	article := models.Article1
+	jsonData, err := json.Marshal(article)
 	if err != nil {
-		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+		http.Error(w, "fail to encode json\n", http.StatusInternalServerError)
 		return
 	}
-	resString := fmt.Sprintf("Article No.%d\n", articleId)
-	io.WriteString(w, resString)
+	w.Write(jsonData)
+	// articleId, err := strconv.Atoi(mux.Vars(req)["id"])
+	// if err != nil {
+	// 	http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+	// 	return
+	// }
+	// resString := fmt.Sprintf("Article No.%d\n", articleId)
+	// io.WriteString(w, resString)
 }
 
 func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
