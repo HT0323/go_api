@@ -7,14 +7,14 @@ var (
 		CommentID: 1,
 		ArticleID: 1,
 		Message:   "test1",
-		CreatedAT: time.Now(),
+		CreatedAt: time.Now(),
 	}
 
 	Comment2 = Comment{
 		CommentID: 2,
 		ArticleID: 1,
 		Message:   "test2",
-		CreatedAT: time.Now(),
+		CreatedAt: time.Now(),
 	}
 )
 
@@ -26,7 +26,7 @@ var (
 		UserName:    "saki",
 		NiceNum:     1,
 		CommentList: []Comment{Comment1, Comment2},
-		CreatedAT:   time.Now(),
+		CreatedAt:   time.Now(),
 	}
 
 	Article2 = Article{
@@ -35,6 +35,6 @@ var (
 		Contents:  "TEST",
 		UserName:  "yamada",
 		NiceNum:   2,
-		CreatedAT: time.Now(),
+		CreatedAt: time.Now(),
 	}
 )
