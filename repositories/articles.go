@@ -35,7 +35,7 @@ func InsertArticle(db *sql.DB, article models.Article) (models.Article, error) {
 }
 
 // 記事一覧の取得
-func SelectArticleList(db *sql.DB, page int) ([]models.Article, err) {
+func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	const sqlStr = `
 		select article_id, title, contents, username, nice
 		from articles
@@ -58,4 +58,33 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, err) {
 	}
 
 	return articleArray, nil
+}
+
+// 記事を１件取得
+func SelectArticleDetail(db *sql.DB, articleID int) (models.Article, error) {
+	const sqlStr = `
+		select *
+		from article
+		where article_id = ?;
+	`
+
+	row := db.QueryRow(sqlStr, articleID)
+	if err := row.Err(); err != nil {
+		return models.Article{}, err
+	}
+
+	var article models.Article
+	var createdTime sql.NullTime
+
+	err := row.Scan(&article.ID, &article.Title, &article.Contents, &article.UserName, &article.NiceNum, &createdTime)
+
+	if err != nil {
+		return models.Article{}, err
+	}
+
+	if createdTime.Valid {
+		article.CreatedAT = createdTime.Time
+	}
+
+	return article, nil
 }
