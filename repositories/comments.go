@@ -29,7 +29,7 @@ func InsertComment(db *sql.DB, comment models.Comment) (models.Comment, error) {
 }
 
 // 記事についているコメント一覧を取得
-func SelectCommentList(db sql.DB, articleID int) ([]models.Comment, error) {
+func SelectCommentList(db *sql.DB, articleID int) ([]models.Comment, error) {
 	const sqlStr = `
 		select *
 		from comments
