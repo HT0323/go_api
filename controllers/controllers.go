@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"encoding/json"
@@ -11,11 +11,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func HelloHandler(w http.ResponseWriter, req *http.Request) {
+type MyAppController struct {
+	service *services.MyAppService
+}
+
+func NewMyAppController(s *services.MyAppService) *MyAppController {
+	return &MyAppController{service: s}
+}
+func (c *MyAppController) HelloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "Hello, world!\n")
 }
 
-func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
+func (c *MyAppController) PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonを構造体にデコード
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
@@ -23,7 +30,7 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	article, err := services.PostArticleService(reqArticle)
+	article, err := c.service.PostArticleService(reqArticle)
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
@@ -32,7 +39,7 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
+func (c *MyAppController) ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	queryMap := req.URL.Query()
 
 	var page int
@@ -49,7 +56,8 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		// クエリパラが付与されていない場合は、page=1が付与されているとみなす
 		page = 1
 	}
-	articleList, err := services.GetArticleListService(page)
+	articleList, err := c.service.GetArticleListService(page)
+
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
@@ -59,14 +67,14 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(articleList)
 }
 
-func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
+func (c *MyAppController) ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 
 	articleId, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-	article, err := services.GetArticleService(articleId)
+	article, err := c.service.GetArticleService(articleId)
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
@@ -76,7 +84,7 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
+func (c *MyAppController) PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonを構造体にデコード
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
@@ -84,7 +92,7 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	article, err := services.PostNiceService(reqArticle)
+	article, err := c.service.PostNiceService(reqArticle)
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
@@ -92,7 +100,7 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(article)
 }
 
-func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
+func (c *MyAppController) PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	// jsonを構造体にデコード
 	var reqComment models.Comment
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
@@ -100,7 +108,7 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	comment, err := services.PostCommentService(reqComment)
+	comment, err := c.service.PostCommentService(reqComment)
 	if err != nil {
 		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
 		return
