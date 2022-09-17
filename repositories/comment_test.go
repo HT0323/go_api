@@ -1,7 +1,6 @@
 package repositories_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/HT0323/go_api/models"
@@ -28,7 +27,7 @@ func TestInsertComment(t *testing.T) {
 		Message:   "CommentInsertTest",
 	}
 
-	expectedCommentID := 6
+	expectedCommentID := 3
 	newComment, err := repositories.InsertComment(testDB, comment)
 	if err != nil {
 		t.Error(err)
@@ -42,8 +41,6 @@ func TestInsertComment(t *testing.T) {
 			delete from comments
 			where message = ?
 		`
-		got, err := testDB.Exec(sqlStr, comment.Message)
-		fmt.Println(got)
-		fmt.Println(err)
+		testDB.Exec(sqlStr, comment.Message)
 	})
 }
