@@ -9,6 +9,26 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func TestUpdateNiceNum(t *testing.T) {
+	expectedNiceNum := 3
+	articleId := 1
+	err := repositories.UpdateNiceNum(testDB, articleId)
+	if err != nil {
+		t.Error(err)
+	}
+
+	article, err := repositories.SelectArticleDetail(testDB, articleId)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if article.NiceNum != expectedNiceNum {
+		t.Errorf("fail to update nice num: expected %d but got %d\n",
+			expectedNiceNum,
+			article.NiceNum)
+	}
+
+}
 func TestInsertArticle(t *testing.T) {
 	article := models.Article{
 		Title:    "insertText",

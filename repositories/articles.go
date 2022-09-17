@@ -101,22 +101,21 @@ func UpdateNiceNum(db *sql.DB, articleID int) error {
 		from articles
 		where article_id = ?;
 	`
-
 	row := tx.QueryRow(sqlGetNice, articleID)
 	if err := row.Err(); err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	var niceNum int
-	err = row.Scan(&niceNum)
+	var nicenum int
+	err = row.Scan(&nicenum)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	const sqlUpdateNice = `update articles set nice = ? article_id = ?;`
-	_, err = tx.Exec(sqlUpdateNice, niceNum+1, articleID)
+	const sqlUpdateNice = `update articles set nice = ? where article_id = ?`
+	_, err = tx.Exec(sqlUpdateNice, nicenum+1, articleID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -125,6 +124,5 @@ func UpdateNiceNum(db *sql.DB, articleID int) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
-
 	return nil
 }
