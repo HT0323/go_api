@@ -9,8 +9,34 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func TestInsertArticle(t *testing.T) {
+	article := models.Article{
+		Title:    "insertText",
+		Contents: "testtest",
+		UserName: "saki",
+	}
+
+	expectedArticleNum := 5
+	newArticle, err := repositories.InsertArticle(testDB, article)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if newArticle.ID != expectedArticleNum {
+		t.Errorf("new article id is expected %d but got %d\n", expectedArticleNum, newArticle.ID)
+	}
+
+	t.Cleanup(func() {
+		const sqlStr = `
+			delete from articles
+			where title = ? and contents = ? and username = ?
+		`
+		testDB.Exec(sqlStr, article.Title, article.Contents, article.UserName)
+	})
+}
+
 func TestSelectArticleList(t *testing.T) {
-	expectedNum := 2
+	expectedNum := 4
 	got, err := repositories.SelectArticleList(testDB, 1)
 	if err != nil {
 		t.Fatal(err)
