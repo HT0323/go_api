@@ -3,11 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/HT0323/go_api/models"
+	"github.com/HT0323/go_api/services"
 	"github.com/gorilla/mux"
 )
 
@@ -23,7 +23,12 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	article := reqArticle
+	article, err := services.PostArticleService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -44,11 +49,11 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		// クエリパラが付与されていない場合は、page=1が付与されているとみなす
 		page = 1
 	}
-	log.Println(page)
-
-	article1 := models.Article1
-	article2 := models.Article2
-	articleList := []models.Article{article1, article2}
+	articleList, err := services.GetArticleListService(page)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
 	// 構造体をjsonにエンコード
 	json.NewEncoder(w).Encode(articleList)
@@ -61,9 +66,11 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-	log.Println(articleId)
-
-	article := models.Article1
+	article, err := services.GetArticleService(articleId)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
 	// 構造体をjsonにエンコード
 	json.NewEncoder(w).Encode(article)
@@ -77,9 +84,12 @@ func PostNiceHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(article)
-	// io.WriteString(w, "Posting Nice...\n")
 }
 
 func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
@@ -90,7 +100,10 @@ func PostCommentHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// 構造体をjsonにエンコード
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(comment)
-	// io.WriteString(w, "Article Comment...\n")
 }
