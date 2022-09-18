@@ -1,11 +1,15 @@
 package services
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type MyAppService struct {
 	db *sql.DB
 }
 
-func MewMyAppService(db *sql.DB) *MyAppService {
+func NewMyAppService(db *sql.DB) *MyAppService {
+	fmt.Println(&MyAppService{db: db})
 	return &MyAppService{db: db}
 }
