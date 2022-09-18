@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/HT0323/go_api/controllers/services"
 	"github.com/HT0323/go_api/models"
-	"github.com/HT0323/go_api/services"
 	"github.com/gorilla/mux"
 )
 
 type MyAppController struct {
-	service *services.MyAppService
+	service services.MyAppServicer
 }
 
-func NewMyAppController(s *services.MyAppService) *MyAppController {
+func NewMyAppController(s services.MyAppServicer) *MyAppController {
 	return &MyAppController{service: s}
 }
 func (c *MyAppController) HelloHandler(w http.ResponseWriter, req *http.Request) {
