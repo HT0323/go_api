@@ -2,7 +2,6 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type MyAppService struct {
@@ -10,6 +9,5 @@ type MyAppService struct {
 }
 
 func NewMyAppService(db *sql.DB) *MyAppService {
-	fmt.Println(&MyAppService{db: db})
 	return &MyAppService{db: db}
 }

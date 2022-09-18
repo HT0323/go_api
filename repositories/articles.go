@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/HT0323/go_api/models"
 )
@@ -43,6 +44,7 @@ func SelectArticleList(db *sql.DB, page int) ([]models.Article, error) {
 	`
 
 	rows, err := db.Query(sqlStr, articleNum, (page-1)*articleNum)
+	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}

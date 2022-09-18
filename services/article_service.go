@@ -3,7 +3,6 @@ package services
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/HT0323/go_api/apperrors"
 	"github.com/HT0323/go_api/models"
@@ -20,7 +19,6 @@ func (s *MyAppService) GetArticleService(articleID int) (models.Article, error) 
 		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
 		return models.Article{}, err
 	}
-
 	commentList, err := repositories.SelectCommentList(s.db, articleID)
 	if err != nil {
 		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
@@ -38,22 +36,21 @@ func (s *MyAppService) PostArticleService(article models.Article) (models.Articl
 		err = apperrors.InsertDataFailed.Wrap(err, "fail to record data")
 		return models.Article{}, err
 	}
-
 	return newArticle, nil
 }
 
 func (s *MyAppService) GetArticleListService(page int) ([]models.Article, error) {
 	articleList, err := repositories.SelectArticleList(s.db, page)
-	fmt.Println(articleList)
 	if err != nil {
 		err = apperrors.GetDataFailed.Wrap(err, "fail to get data")
-		return []models.Article{}, err
+		return nil, err
 	}
 
 	if len(articleList) == 0 {
 		err := apperrors.NAData.Wrap(ErrNoData, "no data")
 		return nil, err
 	}
+
 	return articleList, nil
 }
 
@@ -67,14 +64,13 @@ func (s *MyAppService) PostNiceService(article models.Article) (models.Article, 
 		err = apperrors.UpdateDataFailed.Wrap(err, "fail to update nice count")
 		return models.Article{}, err
 	}
-	newArticle := models.Article{
+
+	return models.Article{
 		ID:        article.ID,
 		Title:     article.Title,
 		Contents:  article.Contents,
 		UserName:  article.UserName,
 		NiceNum:   article.NiceNum + 1,
 		CreatedAt: article.CreatedAt,
-	}
-
-	return newArticle, err
+	}, nil
 }
