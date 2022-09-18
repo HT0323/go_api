@@ -45,29 +45,26 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	queryMap := req.URL.Query()
 
+	// クエリパラメータpageを取得
 	var page int
 	if p, ok := queryMap["page"]; ok && len(p) > 0 {
 		var err error
-		// pageパラメータに複数値が入ってる場合は初めのものを採用する
 		page, err = strconv.Atoi(p[0])
-		// クエリパラが数字以外であればエラーを出力
 		if err != nil {
-			err = apperrors.BadParam.Wrap(err, "query-param must ne number")
+			err = apperrors.BadParam.Wrap(err, "queryparam must be number")
 			apperrors.ErrorHandler(w, req, err)
 			return
 		}
 	} else {
-		// クエリパラが付与されていない場合は、page=1が付与されているとみなす
 		page = 1
 	}
-	articleList, err := c.service.GetArticleListService(page)
 
+	articleList, err := c.service.GetArticleListService(page)
 	if err != nil {
 		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
-	// 構造体をjsonにエンコード
 	json.NewEncoder(w).Encode(articleList)
 }
 

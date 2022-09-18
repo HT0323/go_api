@@ -27,6 +27,8 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		statusCode = http.StatusNotFound
 	case NoTargetData:
 		statusCode = http.StatusBadRequest
+	case BadParam:
+		statusCode = http.StatusBadRequest
 	default:
 		statusCode = http.StatusInternalServerError
 	}
