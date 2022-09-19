@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/HT0323/go_api/apperrors"
+	"github.com/HT0323/go_api/common"
 	"github.com/HT0323/go_api/controllers/services"
 	"github.com/HT0323/go_api/models"
 	"github.com/gorilla/mux"
@@ -30,6 +32,14 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		err = apperrors.RrqBodyDecodeFailed.Wrap(err, "bad request body")
 		apperrors.ErrorHandler(w, req, err)
+	}
+
+	// 認証情報から取り出したuserNameとリクエストボディーのuserNameが一致するか検証
+	authedUserName := common.GetUserName(req.Context())
+	if reqArticle.UserName != authedUserName {
+		err := apperrors.NotMatchUser.Wrap(errors.New("does not match reqBody user and idtoken user"), "invalid parameter")
+		apperrors.ErrorHandler(w, req, err)
+		return
 	}
 
 	// 構造体をjsonにエンコード

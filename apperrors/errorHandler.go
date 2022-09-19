@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/HT0323/go_api/api/middlewares"
+	"github.com/HT0323/go_api/common"
 )
 
 // エラー発生した場合のレスポンス処理を行う
@@ -23,7 +23,7 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		}
 	}
 
-	traceID := middlewares.GetTraceID(req.Context())
+	traceID := common.GetTraceID(req.Context())
 	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int
@@ -35,6 +35,10 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		statusCode = http.StatusBadRequest
 	case BadParam:
 		statusCode = http.StatusBadRequest
+	case RequiredAuthorizationHeader, Unauthorizated:
+		statusCode = http.StatusUnauthorized
+	case NotMatchUser:
+		statusCode = http.StatusForbidden
 	default:
 		statusCode = http.StatusInternalServerError
 	}
